@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultTerminal", "DefaultTerminal\DefaultTerminal.csproj", "{848F213B-A6EF-45DF-94EA-E1B16303F78D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultTerminal.Hook", "DefaultTerminal.Hook\DefaultTerminal.Hook.csproj", "{444780AB-1DC9-4AE4-8CFB-AB5FC853CF94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultTerminal", "DefaultTerminal\DefaultTerminal.csproj", "{15096294-F45D-47AE-BF65-D84B0BC81B64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{848F213B-A6EF-45DF-94EA-E1B16303F78D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{848F213B-A6EF-45DF-94EA-E1B16303F78D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{848F213B-A6EF-45DF-94EA-E1B16303F78D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{848F213B-A6EF-45DF-94EA-E1B16303F78D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{444780AB-1DC9-4AE4-8CFB-AB5FC853CF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{444780AB-1DC9-4AE4-8CFB-AB5FC853CF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{444780AB-1DC9-4AE4-8CFB-AB5FC853CF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{444780AB-1DC9-4AE4-8CFB-AB5FC853CF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15096294-F45D-47AE-BF65-D84B0BC81B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15096294-F45D-47AE-BF65-D84B0BC81B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15096294-F45D-47AE-BF65-D84B0BC81B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15096294-F45D-47AE-BF65-D84B0BC81B64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
