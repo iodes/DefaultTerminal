@@ -21,10 +21,5 @@ namespace DefaultTerminal.Hook
         {
             ProcessCreated?.Invoke(applicationName, commandLine, processId, isRedirected);
         }
-
-        public void WriteMessage(string value)
-        {
-            Console.WriteLine(value);
-        }
     }
 }
