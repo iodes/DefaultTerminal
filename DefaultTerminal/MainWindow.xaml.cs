@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting;
@@ -42,7 +42,7 @@ namespace DefaultTerminal
             }
         }
 
-        private void ServerInterface_ProcessCreated(string applicationName, string commandLine, int processId)
+        private void ServerInterface_ProcessCreated(string applicationName, string commandLine, int processId, bool isRedirected)
         {
             Console.WriteLine($"Process ID : {processId}");
             Console.WriteLine($"Application Name : {applicationName}");

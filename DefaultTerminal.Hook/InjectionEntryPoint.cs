@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using DefaultTerminal.Hook.Natives;
@@ -21,17 +20,37 @@ namespace DefaultTerminal.Hook
         }
         #endregion
 
+        #region Hook Methods
+        private bool OnCreateProcessHook(string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation)
+        {
+            bool isRedirected = false;
+            var applicationName = lpApplicationName;
+            var commandLine = lpCommandLine;
+
+            // When dwCreationFlags is not CREATE_NO_WINDOW and lpApplicationName exists
+            // Attempts to redirect the hooked request to Windows Terminal.
+            if ((dwCreationFlags & 0x08000000) == 0 && !string.IsNullOrEmpty(lpApplicationName))
+            {
+                applicationName = null;
+                commandLine = $"wt {lpCommandLine.Replace(";", "\\;")}";
+                isRedirected = true;
+            }
+
+            var result = NativeMethods.CreateProcess(applicationName, commandLine, ref lpProcessAttributes,
+                ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory,
+                ref lpStartupInfo, out lpProcessInformation);
+
+            Server.RaiseProcessCreated(lpApplicationName, lpCommandLine, lpProcessInformation.dwProcessId, isRedirected);
+
+            return result;
+        }
+        #endregion
+
         #region Public Methods
         public void Run(RemoteHooking.IContext context, string channelName)
         {
-            Server.WriteMessage("Installed : " + RemoteHooking.GetCurrentProcessId());
-
-            var createProcessHook = LocalHook.Create(LocalHook.GetProcAddress("kernel32.dll", "CreateProcessW"), new NativeDelegates.CreateProcessDelegate(CreateProcessHook), this);
-
-            createProcessHook.ThreadACL.SetExclusiveACL(new[]
-            {
-                0
-            });
+            var createProcessHook = LocalHook.Create(LocalHook.GetProcAddress("kernel32.dll", "CreateProcessW"), new NativeDelegates.CreateProcessDelegate(OnCreateProcessHook), this);
+            createProcessHook.ThreadACL.SetExclusiveACL(new[] { 0 });
 
             RemoteHooking.WakeUpProcess();
 
@@ -39,47 +58,18 @@ namespace DefaultTerminal.Hook
             {
                 while (true)
                 {
-                    Thread.Sleep(500);
+                    // Periodically send status to the server
+                    Server.RaisePingRequested(channelName);
+                    Thread.Sleep(1000);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.Message);
+                // ignored
             }
 
             createProcessHook.Dispose();
             LocalHook.Release();
-        }
-        #endregion
-
-        #region Private Methods
-        private string EscapeCommand(string value)
-        {
-            var escapeValue = value.Replace(";", "\\;");
-            return escapeValue;
-        }
-        #endregion
-
-        #region Hook Methods
-        private bool CreateProcessHook(string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation)
-        {
-            var applicationName = lpApplicationName;
-            var commandLine = lpCommandLine;
-
-            if ((dwCreationFlags & 0x08000000) == 0 && !string.IsNullOrEmpty(lpApplicationName))
-            {
-                applicationName = null;
-                commandLine = $"wt {EscapeCommand(lpCommandLine)}";
-                Server.WriteMessage($"Terminal is redirected : {lpCommandLine}");
-            }
-
-            var result = NativeMethods.CreateProcess(applicationName, commandLine, ref lpProcessAttributes,
-                ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory,
-                ref lpStartupInfo, out lpProcessInformation);
-
-            Server.OnProcessCreated(lpApplicationName, lpCommandLine, lpProcessInformation.dwProcessId);
-
-            return result;
         }
         #endregion
     }

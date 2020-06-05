@@ -1,23 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace DefaultTerminal.Hook
 {
     public class ServerInterface : MarshalByRefObject
     {
-        private readonly List<int> _createdPid = new List<int>();
+        public static event PingRequestedHandler PingRequested;
+
+        public delegate void PingRequestedHandler(string channelName);
 
         public static event ProcessCreatedEventHandler ProcessCreated;
 
-        public delegate void ProcessCreatedEventHandler(string applicationName, string commandLine, int processId);
+        public delegate void ProcessCreatedEventHandler(string applicationName, string commandLine, int processId, bool isRedirected);
 
-        public void OnProcessCreated(string applicationName, string commandLine, int processId)
+        public void RaisePingRequested(string channelName)
         {
-            if (_createdPid.Contains(processId))
-                return;
-            
-            ProcessCreated?.Invoke(applicationName, commandLine, processId);
-            _createdPid.Add(processId);
+            PingRequested?.Invoke(channelName);
+        }
+
+        public void RaiseProcessCreated(string applicationName, string commandLine, int processId, bool isRedirected)
+        {
+            ProcessCreated?.Invoke(applicationName, commandLine, processId, isRedirected);
         }
 
         public void WriteMessage(string value)
