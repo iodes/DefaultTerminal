@@ -32,13 +32,13 @@ namespace DefaultTerminal.Hook
             {
                 var currentProcess = Process.GetProcessById(RemoteHooking.GetCurrentProcessId());
 
-                if (currentProcess.ProcessName == "explorer")
+                if (currentProcess.ProcessName.ToLower() == "explorer")
                 {
                     // If Windows Explorer, redirect only in some cases
-                    switch (Path.GetFileName(lpApplicationName))
+                    switch (Path.GetFileNameWithoutExtension(lpApplicationName)?.ToLower())
                     {
-                        case "powershell.exe":
-                        case "cmd.exe":
+                        case "powershell":
+                        case "cmd":
                         case null:
                             isRedirected = Redirect(ref lpApplicationName, ref lpCommandLine);
                             break;
